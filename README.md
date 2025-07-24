@@ -64,9 +64,9 @@ pub fn main() {
 
 ## Credits
 
-This project is built on top of the excellent [aws_credentials](https://hex.pm/packages/aws_credentials) library from the [aws-erlang](https://github.com/aws-beam/aws-erlang) project. If you find this Gleam wrapper useful, please consider supporting the underlying aws-erlang project:
+This project is built on top of the excellent [aws_credentials](https://hex.pm/packages/aws_credentials) library from the [aws-beam](https://github.com/aws-beam/aws-erlang) project. If you find this Gleam wrapper useful, please consider supporting the underlying aws-erlang project:
 
-- ⭐ Star the [aws-erlang repository](https://github.com/aws-beam/aws-erlang)
+- ⭐ Star the [aws-beam repositories](https://github.com/aws-beam)
 
 ## License
 
