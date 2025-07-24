@@ -31,18 +31,11 @@ import gleam/list
 import gleam/option.{type Option}
 import aws_credentials/decoder_simple as decoder
 import aws_credentials/ffi
+import aws_credentials/app_ffi
 import aws_credentials/types.{
   type CredentialError, type Credentials, type RefreshOptions, FetchError,
-  NoCredentials, ServiceNotStarted,
+  NoCredentials,
 }
-
-/// FFI to check if a value is a tuple
-@external(erlang, "erlang", "is_tuple")
-fn is_tuple(value: Dynamic) -> Bool
-
-/// FFI to get tuple element
-@external(erlang, "erlang", "element")
-fn element(index: Int, tuple: Dynamic) -> Dynamic
 
 /// Start the AWS credentials service
 /// 
@@ -50,17 +43,12 @@ fn element(index: Int, tuple: Dynamic) -> Dynamic
 /// and automatic refresh. The service will automatically fetch credentials
 /// from the configured providers (environment variables, files, ECS, EC2, etc.)
 pub fn start() -> Result(Nil, CredentialError) {
-  let result = ffi.start_link()
-  case is_tuple(result) {
-    True -> {
-      let first = element(1, result)
-      case decoder.dynamic_to_atom_string(first) {
-        Ok("ok") -> Ok(Nil)
-        _ -> Error(ServiceNotStarted)
-      }
-    }
-    False -> Error(ServiceNotStarted)
-  }
+  // First ensure the aws_credentials application is started
+  let app_atom = atom.create("aws_credentials")
+  let _ = app_ffi.ensure_all_started(app_atom)
+  
+  // Now we can use the service (it's already started by the application)
+  Ok(Nil)
 }
 
 /// Stop the AWS credentials service

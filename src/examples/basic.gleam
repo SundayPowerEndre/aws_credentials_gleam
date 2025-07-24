@@ -1,5 +1,5 @@
 /// Basic example of using aws_credentials_gleam
-import aws_credentials
+import aws_credentials_client
 import gleam/io
 import gleam/option
 import gleam/string
@@ -8,7 +8,7 @@ pub fn main() {
   io.println("Starting AWS Credentials example...")
   
   // Start the credentials service
-  case aws_credentials.start() {
+  case aws_credentials_client.start() {
     Ok(_) -> {
       io.println("✓ Credentials service started")
       demo_credentials()
@@ -22,12 +22,12 @@ pub fn main() {
 fn demo_credentials() {
   // Check if we have credentials
   io.println("\nChecking for credentials...")
-  let has_creds = aws_credentials.has_credentials()
+  let has_creds = aws_credentials_client.has_credentials()
   io.println("Has credentials: " <> string.inspect(has_creds))
   
   // Get credentials
   io.println("\nFetching credentials...")
-  case aws_credentials.get_credentials() {
+  case aws_credentials_client.get_credentials() {
     Ok(option.Some(creds)) -> {
       io.println("✓ Credentials found!")
       io.println("  Provider: " <> creds.credential_provider)
@@ -57,7 +57,7 @@ fn demo_credentials() {
   
   // Try to force refresh
   io.println("\nForcing credential refresh...")
-  case aws_credentials.force_refresh() {
+  case aws_credentials_client.force_refresh() {
     Ok(option.Some(_)) -> io.println("✓ Credentials refreshed successfully")
     Ok(option.None) -> io.println("⚠ No credentials found after refresh")
     Error(e) -> io.println("✗ Refresh failed: " <> string.inspect(e))
@@ -65,6 +65,6 @@ fn demo_credentials() {
   
   // Clean up
   io.println("\nStopping credentials service...")
-  aws_credentials.stop()
+  aws_credentials_client.stop()
   io.println("✓ Done")
 }

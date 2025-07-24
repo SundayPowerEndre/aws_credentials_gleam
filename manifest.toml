@@ -2,13 +2,18 @@
 # You typically do not need to edit this file
 
 packages = [
+  { name = "aws_credentials", version = "0.3.5", build_tools = ["rebar3"], requirements = ["eini_beam", "iso8601", "jsx"], otp_app = "aws_credentials", source = "hex", outer_checksum = "6541917ED14C7292B6EAE65C2E3BAF15A79EDED19F009F217C48234202884228" },
+  { name = "eini_beam", version = "2.2.5", build_tools = ["rebar3"], requirements = [], otp_app = "eini", source = "hex", outer_checksum = "511E9207649F3BECB5D945F1813615987899CF78FA130F92BE07193A6A74ECB8" },
   { name = "gleam_erlang", version = "1.2.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "gleam_erlang", source = "hex", outer_checksum = "F91CE62A2D011FA13341F3723DB7DB118541AAA5FE7311BD2716D018F01EF9E3" },
   { name = "gleam_otp", version = "1.0.0", build_tools = ["gleam"], requirements = ["gleam_erlang", "gleam_stdlib"], otp_app = "gleam_otp", source = "hex", outer_checksum = "7020E652D18F9ABAC9C877270B14160519FA0856EE80126231C505D719AD68DA" },
   { name = "gleam_stdlib", version = "0.62.0", build_tools = ["gleam"], requirements = [], otp_app = "gleam_stdlib", source = "hex", outer_checksum = "DC8872BC0B8550F6E22F0F698CFE7F1E4BDA7312FDEB40D6C3F44C5B706C8310" },
   { name = "gleeunit", version = "1.6.1", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "gleeunit", source = "hex", outer_checksum = "FDC68A8C492B1E9B429249062CD9BAC9B5538C6FBF584817205D0998C42E1DAC" },
+  { name = "iso8601", version = "1.3.4", build_tools = ["rebar3"], requirements = [], otp_app = "iso8601", source = "hex", outer_checksum = "A334469C07F1C219326BC891A95F5EEC8EB12DD8071A3FFF56A7843CB20FAE34" },
+  { name = "jsx", version = "3.1.0", build_tools = ["rebar3"], requirements = [], otp_app = "jsx", source = "hex", outer_checksum = "0C5CC8FDC11B53CC25CF65AC6705AD39E54ECC56D1C22E4ADB8F5A53FB9427F3" },
 ]
 
 [requirements]
+aws_credentials = { version = "0.3.5" }
 gleam_erlang = { version = ">= 1.2.0 and < 2.0.0" }
 gleam_otp = { version = ">= 1.0.0 and < 2.0.0" }
 gleam_stdlib = { version = ">= 0.62.0 and < 1.0.0" }
