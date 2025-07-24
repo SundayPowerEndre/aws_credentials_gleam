@@ -1,0 +1,16 @@
+*.beam
+*.ez
+/build
+/_build
+/_checkouts
+/cover
+/deps
+/doc
+/ebin
+/logs
+/erl_crash.dump
+.rebar3
+rebar3.crashdump
+.gleam
+.erlang.mk
+.DS_Store
