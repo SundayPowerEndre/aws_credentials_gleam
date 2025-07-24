@@ -2,64 +2,55 @@ import gleam/dynamic
 import gleam/erlang/atom
 import gleam/list
 import gleam/option.{type Option}
+import gleam/result
 import aws_credentials/decoder_simple as decoder
 import aws_credentials/ffi
 import aws_credentials/app_ffi
 import aws_credentials/types.{
   type CredentialError, type Credentials, type RefreshOptions, FetchError,
-  NoCredentials,
+  NoCredentials, ServiceNotStarted,
 }
 
 pub fn start() -> Result(Nil, CredentialError) {
-  let app_atom = atom.create("aws_credentials")
-  let _ = app_ffi.ensure_all_started(app_atom)
-  
-  Ok(Nil)
+  atom.create("aws_credentials")
+  |> app_ffi.safe_ensure_all_started
+  |> result.map_error(ServiceNotStarted)
 }
 
 pub fn stop() -> Nil {
-  let _ = ffi.stop()
+  ffi.stop()
   Nil
 }
 
 pub fn get_credentials() -> Result(Option(Credentials), CredentialError) {
-  let result = ffi.get_credentials()
-  
-  case decoder.decode_credentials(result) {
-    Ok(creds) -> Ok(creds)
-    Error(reason) -> Error(FetchError(reason))
-  }
+  ffi.get_credentials()
+  |> decoder.decode_credentials
+  |> result.map_error(FetchError)
 }
 
 pub fn force_refresh() -> Result(Option(Credentials), CredentialError) {
-  let result = ffi.force_refresh()
-  
-  case decoder.decode_refresh_result(result) {
-    Ok(option.Some(creds)) -> Ok(option.Some(creds))
-    Ok(option.None) -> Ok(option.None)
-    Error(reason) -> Error(FetchError(reason))
-  }
+  ffi.force_refresh()
+  |> decoder.decode_refresh_result
+  |> result.map_error(FetchError)
 }
 
 pub fn force_refresh_with_options(
   options: RefreshOptions,
 ) -> Result(Option(Credentials), CredentialError) {
-  let opts = types.get_options(options)
+  use erlang_opts <- result.try(prepare_options(options))
   
-  let erlang_opts =
-    opts
-    |> list.map(fn(pair) {
-      let #(key, value) = pair
-      #(atom.create(key), dynamic.string(value))
-    })
-  
-  let result = ffi.force_refresh_with_options(erlang_opts)
-  
-  case decoder.decode_refresh_result(result) {
-    Ok(option.Some(creds)) -> Ok(option.Some(creds))
-    Ok(option.None) -> Ok(option.None)
-    Error(reason) -> Error(FetchError(reason))
-  }
+  ffi.force_refresh_with_options(erlang_opts)
+  |> decoder.decode_refresh_result
+  |> result.map_error(FetchError)
+}
+
+fn prepare_options(options: RefreshOptions) -> Result(List(#(atom.Atom, dynamic.Dynamic)), CredentialError) {
+  types.to_erlang_options(options)
+  |> list.map(fn(pair) {
+    let #(key, value) = pair
+    #(atom.create(key), dynamic.string(value))
+  })
+  |> Ok
 }
 
 pub fn has_credentials() -> Bool {
@@ -70,9 +61,10 @@ pub fn has_credentials() -> Bool {
 }
 
 pub fn require_credentials() -> Result(Credentials, CredentialError) {
-  case get_credentials() {
-    Ok(option.Some(creds)) -> Ok(creds)
-    Ok(option.None) -> Error(NoCredentials)
-    Error(e) -> Error(e)
+  use maybe_creds <- result.try(get_credentials())
+  
+  case maybe_creds {
+    option.Some(creds) -> Ok(creds)
+    option.None -> Error(NoCredentials)
   }
 }
